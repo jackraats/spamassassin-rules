@@ -1,6 +1,6 @@
-#
-# Misc rules
-#
+# --------------------------------------------------------------------------------------
+# 99_misc.cf
+# --------------------------------------------------------------------------------------
 
 describe	LOCAL_BITCOIN	Detect phising malware asking for bitcoins
 body		__BTC1		/\b[13][a-km-zA-HJ-NP-Z1-9]{25,34}\b/ 
@@ -32,15 +32,15 @@ score		LOCAL_MARKETEERSITE   0.5
 
 describe	LOCAL_SCAM_1	Keyword used of scams
 body		LOCAL_SCAM_1	/overleden/
-score		LOCAL_SCAM_1	0.1
+score		LOCAL_SCAM_1	0.2
 
 describe	LOCAL_SCAM_2	Keyword used of scams
 body		LOCAL_SCAM_2	/buitenlandse investeerder/
-score		LOCAL_SCAM_2	0.1
+score		LOCAL_SCAM_2	0.2
 
 describe	LOCAL_SCAM_3	Keyword used of scams
 body		LOCAL_SCAM_3	/SugarCRM/
-score		LOCAL_SCAM_3	0.1
+score		LOCAL_SCAM_3	0.2
 
 describe	LOCAL_SCAM_4	Keyword used of scams
 body		LOCAL_SCAM_4	/jackpot/
@@ -48,19 +48,19 @@ score		LOCAL_SCAM_4	0.3
 
 describe	LOCAL_SCAM_5	Keyword used of scams
 body		LOCAL_SCAM_5	/gefeliciteerd/
-score		LOCAL_SCAM_5	0.1
+score		LOCAL_SCAM_5	0.2
 
 describe	LOCAL_SCAM_6	Keyword used of scams
 body		LOCAL_SCAM_6	/gratis/
-score		LOCAL_SCAM_6	0.1
+score		LOCAL_SCAM_6	0.2
 
 describe	LOCAL_SCAM_7	Keyword used of scams
 body		LOCAL_SCAM_7	/bonus/
-score		LOCAL_SCAM_7	0.1
+score		LOCAL_SCAM_7	0.2
 
 describe	LOCAL_SCAM_8	Keyword used of scams
 body		LOCAL_SCAM_8	/gewonnen/
-score		LOCAL_SCAM_8	0.1
+score		LOCAL_SCAM_8	0.2
 
 describe	LOCAL_SCAM_9	Keyword used of scams
 body		LOCAL_SCAM_9	/kraskaarten/

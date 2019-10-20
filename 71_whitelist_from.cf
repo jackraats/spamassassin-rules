@@ -1,3 +1,6 @@
+# ------------------------------------------------------
+# 71_whitelist_from.cf
+# ------------------------------------------------------
 whitelist_from *@aweber.com
 whitelist_from *@anwb.nl
 whitelist_from *@cloudzeeland.nl
