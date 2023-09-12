@@ -1,5 +1,5 @@
 #-----------------------------------------------------------
-# blacklist_from	
+# blacklist_from	  12-09-2023
 #-----------------------------------------------------------
 blacklist_from *@163.com					 
 blacklist_from *@allthefamilynews.com 			 
