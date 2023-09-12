@@ -1,3 +1,6 @@
+# -------------------------------------------------------
+# 71_whitelist_from_spf.cf    12-09-2023
+# -------------------------------------------------------
 whitelist_from_spf *@ah.nl
 whitelist_from_spf *@akzonobel.com
 whitelist_from_spf *@aramco.nl
