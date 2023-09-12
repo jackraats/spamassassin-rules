@@ -1,5 +1,5 @@
 # ------------------------------------------------------
-# 71_whitelist_from.cf
+# 71_whitelist_from.cf  12-09-2023
 # ------------------------------------------------------
 whitelist_from *@aweber.com
 whitelist_from *@anwb.nl
