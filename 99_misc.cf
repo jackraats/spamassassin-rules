@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------------------------
-# 99_misc.cf
+# 99_misc.cf      12-09-2023
 # --------------------------------------------------------------------------------------
 
 describe	LOCAL_BITCOIN	Detect phising malware asking for bitcoins
@@ -90,4 +90,3 @@ score		LOCAL_NEWSLETTER	0.5
 describe	LOCAL_NEWSLETTER_SPF	Escalate certain newsletters
 meta		LOCAL_NEWSLETTER_SPF	( __LOCAL_NEWSLETTER_1 && __LOCAL_NEWSLETTER_2 && __LOCAL_NEWSLETTER_3 && SPF_PASS )
 score		LOCAL_NEWSLETTER_SPF	0.5
-
