@@ -1,0 +1,347 @@
+# --------------------------------------------------------------------------------------
+# jrspam.cf
+# --------------------------------------------------------------------------------------
+
+describe	LOCAL_BITCOIN	Detect phising malware asking for bitcoins
+body		__BTC1		/\b[13][a-km-zA-HJ-NP-Z1-9]{25,34}\b/ 
+body		__BTC2		/\b\W*b\W*i\W*t\W*c\W*o\W*i\W*n\W*\b/i 
+body		__BTC3		/\b\W*b\W*t\W*c\W*\b/i 
+body		__BTC4		/\bb[i\x{0456}]t[c\x{0441}][o\x{043E}][i\x{0456}]n\b/i 
+meta		LOCAL_BITCOIN	( __BTC1 && ( __BTC2 || __BTC3 || __BTC4 ) ) 
+score		LOCAL_BITCOIN	5.0
+
+describe	LOCAL_DEAR_TAXPAYER 	Detect phishing mails for taxpayers
+body		LOCAL_DEAR_TAXPAYER	/Lieve belastingbetaler,/
+score		LOCAL_DEAR_TAXPAYER 	1.5
+
+describe	LOCAL_X_CCMID	X-CcmId header
+header		LOCAL_X_CCMID	X-CcmId =~ /.+/
+score		LOCAL_X_CCMID	1.0
+
+describe	LOCAL_X_REPORT_ABUSE   X-Report-Abuse header
+header		LOCAL_X_REPORT_ABUSE   X-Report-Abuse =~ /Please report abuse of this campaign/
+score		LOCAL_X_REPORT_ABUSE   1.0
+
+describe	LOCAL_LIST_UNSUBSCRIBE   Known list-unsubscribe for marketeers
+header		LOCAL_LIST_UNSUBSCRIBE   List-Unsubscribe =~ /(news\.lead-er\.nl|marketing-email\.info|nailchimp\.com)/
+score		LOCAL_LIST_UNSUBSCRIBE   0.5
+
+describe	LOCAL_MARKETEERSITE   Known list-unsubscribe for marketeers
+header		LOCAL_MARKETEERSITE   rawbody =~ /(news\.lead-er\.nl|www\.serc\.nl)/
+score		LOCAL_MARKETEERSITE   0.5
+
+describe	LOCAL_SCAM_1	Keyword used of scams
+body		LOCAL_SCAM_1	/overleden/
+score		LOCAL_SCAM_1	0.2
+
+describe	LOCAL_SCAM_2	Keyword used of scams
+body		LOCAL_SCAM_2	/buitenlandse investeerder/
+score		LOCAL_SCAM_2	0.2
+
+describe	LOCAL_SCAM_3	Keyword used of scams
+body		LOCAL_SCAM_3	/SugarCRM/
+score		LOCAL_SCAM_3	0.2
+
+describe	LOCAL_SCAM_4	Keyword used of scams
+body		LOCAL_SCAM_4	/jackpot/
+score		LOCAL_SCAM_4	0.3
+
+describe	LOCAL_SCAM_5	Keyword used of scams
+body		LOCAL_SCAM_5	/gefeliciteerd/
+score		LOCAL_SCAM_5	0.2
+
+describe	LOCAL_SCAM_6	Keyword used of scams
+body		LOCAL_SCAM_6	/gratis/
+score		LOCAL_SCAM_6	0.2
+
+describe	LOCAL_SCAM_7	Keyword used of scams
+body		LOCAL_SCAM_7	/bonus/
+score		LOCAL_SCAM_7	0.2
+
+describe	LOCAL_SCAM_8	Keyword used of scams
+body		LOCAL_SCAM_8	/gewonnen/
+score		LOCAL_SCAM_8	0.2
+
+describe	LOCAL_SCAM_9	Keyword used of scams
+body		LOCAL_SCAM_9	/kraskaarten/
+score		LOCAL_SCAM_9	0.3
+
+describe	LOCAL_SCAM_10	Keyword used of scams
+body		LOCAL_SCAM_10	/3V/
+score		LOCAL_SCAM_10	0.1
+
+describe	LOCAL_SCAM_11	Keyword used of scams
+body		LOCAL_SCAM_11	/3V Payment Group/
+score		LOCAL_SCAM_11	0.5
+
+describe	LOCAL_SCAM_12	Keyword used of scams
+body		LOCAL_SCAM_12	/3V Card/
+score		LOCAL_SCAM_12	0.5
+
+describe	LOCAL_NEWSLETTER	Escalate certain newsletters
+describe	LOCAL_NEWSLETTER	Escalate certain newsletters
+header		__LOCAL_NEWSLETTER_1	X-Priority =~ /3/
+header		__LOCAL_NEWSLETTER_2	X-Mailer =~ /PHPMailer/
+body		__LOCAL_NEWSLETTER_3	/nieuwsbrief/
+meta		LOCAL_NEWSLETTER	( __LOCAL_NEWSLETTER_1 && __LOCAL_NEWSLETTER_2 && __LOCAL_NEWSLETTER_3 )
+score		LOCAL_NEWSLETTER	0.5
+
+
+describe	LOCAL_NEWSLETTER_SPF	Escalate certain newsletters
+meta		LOCAL_NEWSLETTER_SPF	( __LOCAL_NEWSLETTER_1 && __LOCAL_NEWSLETTER_2 && __LOCAL_NEWSLETTER_3 && SPF_PASS )
+score		LOCAL_NEWSLETTER_SPF	0.5
+
+# ----------------------------------------------------------------------------------------------------
+# spf_softfail
+# ----------------------------------------------------------------------------------------------------
+
+describe SPF_SOFTFAIL_FROM      Escalate SPF Softfails for free mail services
+header   __SPF_SOFTFAIL_FROM    Return-Path:addr =~ /\@(gmail\.com|outlook\.com|hotmail\.com|live\.com)$/i
+meta     SPF_SOFTFAIL_FROM      ( __SPF_SOFTFAIL_FROM && SPF_SOFTFAIL )
+score    SPF_SOFTFAIL_FROM      2.5
+
+# ----------------------------------------------------------------------------------------------------
+#
+# Try to stop known phishing attempt
+#
+# ----------------------------------------------------------------------------------------------------
+
+describe PHISH_FROM_ING        Trigger on phishing mails
+header   PHISH_FROM_ING        From:addr =~ /\@(mail\.ing\.nl|ing\.nl|ing\.be|ingbank\.nl|ingbank\.com|postbank\.nl|ingservice\.nl)$/i
+score    PHISH_FROM_ING        2.0
+
+describe UNPHISH_FROM_ING      Untrigger on valid mails
+header   __UNPHISH_FROM_ING_A  Return-Path:addr =~ /\@(mail\.ing\.nl|ing\.nl|ing\.be|ingbank\.nl|ingbank\.com|postbank\.nl)$/i
+meta     UNPHISH_FROM_ING      ( __UNPHISH_FROM_ING_A && SPF_PASS )
+score    UNPHISH_FROM_ING      -2.0
+
+describe PHISH_SBJ_ING         Some known phishing subjects
+header   PHISH_SBJ_ING         Subject =~ /(ING Verificatie|ING Status Notification|ING Account Referentie)/
+score    PHISH_SBJ_ING         0.5
+
+# ----------------------------------------------------------------------------------------------------
+
+describe PHISH_FROM_ABNAMRO        Trigger on phishing mails
+header   PHISH_FROM_ABNAMRO        From:addr =~ /\@(abnamro\.nl|nl\.abnamro\.com)$/i
+score    PHISH_FROM_ABNAMRO        2.0
+
+describe UNPHISH_FROM_ABNAMRO      Untrigger on valid mails
+header   __UNPHISH_FROM_ABNAMRO_A  Return-Path:addr =~ /\@(abnamro\.nl|nl\.abnamro\.com)$/i
+meta     UNPHISH_FROM_ABNAMRO      ( __UNPHISH_FROM_ABNAMRO_A && SPF_PASS )
+score    UNPHISH_FROM_ABNAMRO      -2.0
+
+# ----------------------------------------------------------------------------------------------------
+
+describe PHISH_FROM_RABOBANK        Trigger on phishing mails
+header   PHISH_FROM_RABOBANK        From:addr =~ /\@rabobank\.nl$/i
+score    PHISH_FROM_RABOBANK        2.0
+
+describe UNPHISH_FROM_RABOBANK      Untrigger on valid mails
+header   __UNPHISH_FROM_RABOBANK_A  Return-Path:addr =~ /\@rabobank\.nl$/i
+meta     UNPHISH_FROM_RABOBANK      ( __UNPHISH_FROM_RABOBANK_A && SPF_PASS )
+score    UNPHISH_FROM_RABOBANK      -2.0
+
+# ----------------------------------------------------------------------------------------------------
+
+describe PHISH_FROM_VODAFONE   Trigger on phishing mails
+header   PHISH_FROM_VODAFONE   From:addr =~ /\@(vodafone\.nl|vodafone\.com|.*\.vodafone\.nl)$/i
+score    PHISH_FROM_VODAFONE   2.0
+
+describe UNPHISH_FROM_VODAFONE      Untrigger on valid mails
+header   __UNPHISH_FROM_VODAFONE_A  Return-Path:addr =~ /\@(vodafone\.nl|vodafone\.com|.*\.vodafone\.nl)$/i
+meta     UNPHISH_FROM_VODAFONE      ( __UNPHISH_FROM_VODAFONE_A && DKIM_VALID )
+score    UNPHISH_FROM_VODAFONE      -2.0
+
+# ----------------------------------------------------------------------------------------------------
+
+describe PHISH_FROM_POSTNL   Trigger on phishing mails
+header   PHISH_FROM_POSTNL   From:addr =~ /\@(postnl\.nl|postnlinfo\.eu)$/i
+score    PHISH_FROM_POSTNL   2.0
+
+describe UNPHISH_FROM_POSTNL      Untrigger on valid mails
+header   __UNPHISH_FROM_POSTNL_A  Return-Path:addr =~ /\@(postnl\.nl|postnlinfo\.eu)$/i
+meta     UNPHISH_FROM_POSTNL      ( __UNPHISH_FROM_POSTNL_A && SPF_PASS )
+score    UNPHISH_FROM_POSTNL      -2.0
+
+describe PHISH_BODY_POSTNL         Some known phishing subjects
+header   PHISH_BODY_POSTNL         rawbody =~ /Beste Online Postnl Customer/
+score    PHISH_BODY_POSTNL         0.5
+
+describe PHISH_SBJ_POSTNL         Some known phishing subjects
+header   PHISH_SBJ_POSTNL         subject =~ /uw pakket is beschikbaar hier is uw nummer:/
+score    PHISH_SBJ_POSTNL         0.5
+
+# ----------------------------------------------------------------------------------------------------
+
+describe PHISH_FROM_SNSBANK        Trigger on phishing mails
+header   PHISH_FROM_SNSBANK        From:addr =~ /\@snsbank\.nl$/i
+score    PHISH_FROM_SNSBANK        3.5
+
+describe PHISH_BODY_SNSBANK_1      Trigger on phishing mails
+header   PHISH_BODY_SNSBANK_1      subject =~ /SNS Bank/i
+score    PHISH_BODY_SNSBANK_1      0.5
+
+describe PHISH_BODY_SNSBANK_2      Trigger on phishing mails
+header   PHISH_BODY_SNSBANK_2      subject =~ /digipas/i
+score    PHISH_BODY_SNSBANK_2      0.5
+
+describe PHISH_BODY_SNSBANK_3      Trigger on phishing mails
+header   PHISH_BODY_SNSBANK_3      subject =~ /Mijn SNS/i
+score    PHISH_BODY_SNSBANK_3      0.5
+
+describe PHISH_BODY_SNSBANK_4      Trigger on phishing mails
+header   PHISH_BODY_SNSBANK_4      subject =~ /SNS Mobiel/i
+score    PHISH_BODY_SNSBANK_4      0.5
+
+describe UNPHISH_FROM_SNSBANK      Untrigger on valid mails
+header   __UNPHISH_FROM_SNSBANK_A  Return-Path:addr =~ /\@snsbank\.nl$/i
+meta     UNPHISH_FROM_SNSBANK      ( __UNPHISH_FROM_SNSBANK_A && SPF_PASS )
+score    UNPHISH_FROM_SNSBANK      -2.0
+
+# ----------------------------------------------------------------------------------------------------
+
+describe PHISH_FROM_KNAB        Trigger on phishing mails
+header   PHISH_FROM_KNAB        From:addr =~ /\@knab\.nl$/i
+score    PHISH_FROM_KNAB        2.0
+
+describe PHISH_FROM_KNAB        Trigger on phishing mails
+header   PHISH_FROM_KNAB        From:addr =~ /knab\@$/i
+score    PHISH_FROM_KNAB        2.0
+
+
+describe UNPHISH_FROM_KNAB      Untrigger on valid mails
+header   __UNPHISH_FROM_KNAB_A  Return-Path:addr =~ /\@knab\.nl$/i
+meta     UNPHISH_FROM_KNAB      ( __UNPHISH_FROM_KNAB_A && SPF_PASS )
+score    UNPHISH_FROM_KNAB      -2.0
+
+# ----------------------------------------------------------------------------------------------------
+
+describe PHISH_FROM_EMAILNL   Trigger on phishing mails
+header   PHISH_FROM_EMAILNL   From:addr =~ /\@(email\.nl)$/i
+score    PHISH_FROM_EMAILNL   2.0
+
+describe UNPHISH_FROM_EMAILNL      Untrigger on valid mails
+header   __UNPHISH_FROM_EMAILNL_A  Return-Path:addr =~ /\@(email\.nl)$/i
+meta     UNPHISH_FROM_EMAILNL      ( __UNPHISH_FROM_EMAILNL_A && SPF_PASS )
+score    UNPHISH_FROM_EMAILNL      -2.0
+
+# ----------------------------------------------------------------------------------------------------
+
+describe PHISH_FROM_APPLE1        Trigger on phishing mails
+header   PHISH_FROM_APPLE1        From:addr =~ /apple/i
+score    PHISH_FROM_APPLE1        0.2
+
+describe PHISH_FROM_APPLE2        Trigger on phishing mails
+header   PHISH_FROM_APPLE2        Return-Path:addr =~ /apple/i
+score    PHISH_FROM_APPLE2        0.2
+
+describe PHISH_BODY_APPLE1         Some known phishing keywords
+header   PHISH_BODY_APPLE1         rawbody =~ /(Apple ID|Apple Profile)/
+score    PHISH_BODY_APPLE1         0.8
+
+describe PHISH_BODY_APPLE2         Some known phishing keywords
+header   PHISH_BODY_APPLE2         rawbody =~ /(Apple iCloud ID|Apple iCloud Profile|iCloud ID|iCloud Account|iCloud Profile)/
+score    PHISH_BODY_APPLE2         0.8
+
+describe PHISH_BODY_APPLE3         Some known phishing keywords
+header   PHISH_BODY_APPLE3         rawbody =~ /(iTunes ID|iTunes Profile)/
+score    PHISH_BODY_APPLE3         0.8
+
+describe PHISH_BODY_APPLE4         Some known phishing keywords
+header   PHISH_BODY_APPLE4         rawbody =~ /(KYC|Know Your Customer)/
+score    PHISH_BODY_APPLE4         0.8
+
+# ----------------------------------------------------------------------------------------------------
+
+describe PHISH_FROM_CJIB1        Trigger on phishing mails
+header   PHISH_FROM_CJIB1        From:addr =~ /cjib/i
+score    PHISH_FROM_CJIB1        0.2
+
+describe PHISH_FROM_CJIB2        Trigger on phishing mails
+header   PHISH_FROM_CJIB2        Return-Path:addr =~ /cjib/i
+score    PHISH_FROM_CJIB2        0.2
+
+describe PHISH_SUBJ_CJIB1        Trigger on phishing mails
+header   PHISH_SUBJ_CJIB1        Subject =~ /Betaalverzoek inzake CJIB \d+/i
+score    PHISH_SUBJ_CJIB1        0.2
+
+describe PHISH_BODY_CJIB1        Trigger on phishing mails
+header   __PHISH_BODY_CJIB1_A    rawbody =~ /Centraal Justitieel Incassobureau/i
+header   __PHISH_BODY_CJIB1_B    rawbody =~ /CJIB/i
+header   __PHISH_BODY_CJIB1_C    rawbody =~ /BKR/i
+meta     PHISH_BODY_CJIB1        ( ( __PHISH_BODY_CJIB1_A || __PHISH_BODY_CJIB1_B ) && __PHISH_BODY_CJIB1_C )
+score    PHISH_BODY_CJIB1        0.8
+
+# ----------------------------------------------------------------------------------------------------
+
+describe PHISH_BODY_WINDOWS1        Trigger on phishing mails
+header   __PHISH_BODY_WINDOWS1_A    rawbody =~ /(PaySafe|PaySafe card|PaySafecard)/i
+header   __PHISH_BODY_WINDOWS1_B    rawbody =~ /(spoedoverboeking|incassokosten)/i
+header   __PHISH_BODY_WINDOWS1_C    rawbody =~ /Windows/i
+meta     PHISH_BODY_WINDOWS1        ( ( __PHISH_BODY_WINDOWS1_A || __PHISH_BODY_WINDOWS1_B ) && __PHISH_BODY_WINDOWS1_C )
+score    PHISH_BODY_WINDOWS1        0.8
+
+# ----------------------------------------------------------------------------------------------------
+
+describe DOMAIN_SUBJ_FALSE	False domain registration
+header   DOMAIN_SUBJ_FALSE	Subject =~ /Domain Alert: JCM RAATS \d+/i
+score    DOMAIN_SUBJ_FALSE	3
+
+# ----------------------------------------------------------------------------------------------------
+# blacklisting
+# ----------------------------------------------------------------------------------------------------
+
+blacklist_from *@163.com					 
+blacklist_from *@allthefamilynews.com 			 
+blacklist_from *@aol.com					 
+blacklist_from *@autovlan.be				 
+blacklist_from *@axiomopportunities.com			 
+blacklist_from *@berlinera.com
+blacklist_from *@berlinera.de
+blacklist_from *@bestcustomlogos.com			 
+blacklist_from *@booglo.com				 
+blacklist_from *@breedbread.com				 
+blacklist_from *@cgfirearms.co.uk			 
+blacklist_from *@colescasinoshops.com			 
+blacklist_from *@cristiemedia.com			 
+blacklist_from *@ctinets.com				 
+blacklist_from *@diamondpoint.net			 
+blacklist_from *@ds.similardealsavailable.com		 
+blacklist_from *@dutchabacus.com				 
+blacklist_from *@e.unimailnews.com			 
+blacklist_from *@easycore.com				 
+blacklist_from *@edgugoodies.com				 
+blacklist_from *@email2inbox.net				 
+blacklist_from *@emissionreductiontrust.com		 
+blacklist_from *@epmailer.net				 
+blacklist_from *@footholds.net				 
+blacklist_from *@godaddygraphicdesigns.com		 
+blacklist_from *@goldfinchdeal.nl			 
+blacklist_from *@greendealfunds.com			 
+blacklist_from *@holidaygoodassurancesuparmarket.com	 
+blacklist_from *@hosting-agency.net			 
+blacklist_from *@imperativeaccount.com			 
+blacklist_from *@importantregistration.com		 
+blacklist_from *@ipapty.info				 
+blacklist_from *@isemaezawa.com				 
+blacklist_from *@loan.com				 
+blacklist_from *@logo-majestic.com			 
+blacklist_from *@newnewsi.com				 
+blacklist_from *@nfji.net				 
+blacklist_from *@propertiesfls.info			 
+blacklist_from *@scandidirector.com			 
+blacklist_from *@service.jumbo.com			 
+blacklist_from *@shopinhours.com				 
+blacklist_from *@shopsystematics.com			 
+blacklist_from *@sparkpostmail.com			 
+blacklist_from *@studiofourbackdoor.com			 
+blacklist_from *@thecreativelogos.com			 
+blacklist_from *@tigress.de				 
+blacklist_from *@topchromatic.com			 
+blacklist_from *@unconventionalremedies.com		 
+blacklist_from *@unimail.ccemails.net			 
+blacklist_from *@union-eternal.com			 
+blacklist_from *@usadesigners.com			 
+blacklist_from *@zoho.com				 
+blacklist_from noreply.icsmailing@*
+blacklist_from *icsmailing@*
